@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "ZlIOb6M+2EKoT5JeOPWiy1mojETrpuXrUWPNg3PGO5ucgfqny9QjeUKVDLmuuoK7j/2eEIzrpscE8E7irWVrKw==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\garre\\OneDrive\\Desktop\\Programming Projects\\WindowManager\\WindowManager.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\garre\\.nuget\\packages\\nhotkey\\3.0.0\\nhotkey.3.0.0.nupkg.sha512",
+    "C:\\Users\\garre\\.nuget\\packages\\nhotkey.windowsforms\\3.0.0\\nhotkey.windowsforms.3.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}
