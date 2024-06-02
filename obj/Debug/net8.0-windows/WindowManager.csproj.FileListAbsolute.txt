@@ -16,3 +16,4 @@ C:\Users\garre\OneDrive\Desktop\Programming Projects\WindowManager\obj\Debug\net
 C:\Users\garre\OneDrive\Desktop\Programming Projects\WindowManager\obj\Debug\net8.0-windows\WindowManager.pdb
 C:\Users\garre\OneDrive\Desktop\Programming Projects\WindowManager\obj\Debug\net8.0-windows\WindowManager.genruntimeconfig.cache
 C:\Users\garre\OneDrive\Desktop\Programming Projects\WindowManager\obj\Debug\net8.0-windows\ref\WindowManager.dll
+C:\Users\garre\OneDrive\Desktop\Programming Projects\WindowManager\obj\Debug\net8.0-windows\WindowManager.sourcelink.json
