@@ -36,14 +36,15 @@ namespace WindowManager
             }
         }
 
-        public static (int width, int height) GetScreenSize()
+        public static (int width, int height, int x, int y) GetWorkingArea()
         {
             var primaryScreen = Screen.PrimaryScreen;
             if (primaryScreen != null)
             {
-                return (primaryScreen.Bounds.Width, primaryScreen.Bounds.Height);
+                var workingArea = primaryScreen.WorkingArea;
+                return (workingArea.Width, workingArea.Height, workingArea.X, workingArea.Y);
             }
-            return (0, 0);
+            return (0, 0, 0, 0);
         }
 
         public static (int x, int y, int width, int height) GetWindowRect()

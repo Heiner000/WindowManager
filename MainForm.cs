@@ -28,6 +28,9 @@ namespace WindowManager
             HotkeyManager.Current.AddOrReplace("SnapTopRight", Keys.P | Keys.Control | Keys.Alt, OnSnapTopRight);
             HotkeyManager.Current.AddOrReplace("SnapBottomLeft", Keys.K | Keys.Control | Keys.Alt, OnSnapBottomLeft);
             HotkeyManager.Current.AddOrReplace("SnapBottomRight", Keys.L | Keys.Control | Keys.Alt, OnSnapBottomRight);
+            HotkeyManager.Current.AddOrReplace("SnapLeftThird", Keys.A | Keys.Control | Keys.Alt, OnSnapLeftThird);
+            HotkeyManager.Current.AddOrReplace("SnapMidThird", Keys.S | Keys.Control | Keys.Alt, OnSnapMidThird);
+            HotkeyManager.Current.AddOrReplace("SnapRightThird", Keys.D | Keys.Control | Keys.Alt, OnSnapRightThird);
         }
 
         private void InitializeTrayIcon()
@@ -43,8 +46,8 @@ namespace WindowManager
 
         protected override void OnLoad(EventArgs e)
         {
-            Visible = false; // hide the form window
-            ShowInTaskbar = false; // remove from taskbar
+            Visible = false; // Hide the form window
+            ShowInTaskbar = false; // Remove from taskbar
             base.OnLoad(e);
         }
 
@@ -55,57 +58,81 @@ namespace WindowManager
 
         private void OnSnapLeft(object? sender, HotkeyEventArgs e)
         {
-            var screenSize = WindowManager.GetScreenSize();
-            WindowManager.MoveAndResizeWindow(0, 0, screenSize.width / 2, screenSize.height);
+            var (width, height, x, y) = WindowManager.GetWorkingArea();
+            WindowManager.MoveAndResizeWindow(x, y, width / 2, height);
             e.Handled = true;
         }
 
         private void OnSnapRight(object? sender, HotkeyEventArgs e)
         {
-            var screenSize = WindowManager.GetScreenSize();
-            WindowManager.MoveAndResizeWindow(screenSize.width / 2, 0, screenSize.width / 2, screenSize.height);
+            var (width, height, x, y) = WindowManager.GetWorkingArea();
+            WindowManager.MoveAndResizeWindow(x + width / 2, y, width / 2, height);
             e.Handled = true;
         }
 
         private void OnSnapTop(object? sender, HotkeyEventArgs e)
         {
-            var screenSize = WindowManager.GetScreenSize();
-            WindowManager.MoveAndResizeWindow(0, 0, screenSize.width, screenSize.height / 2);
+            var (width, height, x, y) = WindowManager.GetWorkingArea();
+            WindowManager.MoveAndResizeWindow(x, y, width, height / 2);
             e.Handled = true;
         }
 
         private void OnSnapBottom(object? sender, HotkeyEventArgs e)
         {
-            var screenSize = WindowManager.GetScreenSize();
-            WindowManager.MoveAndResizeWindow(0, screenSize.height / 2, screenSize.width, screenSize.height / 2);
+            var (width, height, x, y) = WindowManager.GetWorkingArea();
+            WindowManager.MoveAndResizeWindow(x, y + height / 2, width, height / 2);
             e.Handled = true;
         }
 
         private void OnSnapTopLeft(object? sender, HotkeyEventArgs e)
         {
-            var screenSize = WindowManager.GetScreenSize();
-            WindowManager.MoveAndResizeWindow(0, 0, screenSize.width / 2, screenSize.height / 2);
+            var (width, height, x, y) = WindowManager.GetWorkingArea();
+            WindowManager.MoveAndResizeWindow(x, y, width / 2, height / 2);
             e.Handled = true;
         }
 
         private void OnSnapTopRight(object? sender, HotkeyEventArgs e)
         {
-            var screenSize = WindowManager.GetScreenSize();
-            WindowManager.MoveAndResizeWindow(screenSize.width / 2, 0, screenSize.width / 2, screenSize.height / 2);
+            var (width, height, x, y) = WindowManager.GetWorkingArea();
+            WindowManager.MoveAndResizeWindow(x + width / 2, y, width / 2, height / 2);
             e.Handled = true;
         }
 
         private void OnSnapBottomLeft(object? sender, HotkeyEventArgs e)
         {
-            var screenSize = WindowManager.GetScreenSize();
-            WindowManager.MoveAndResizeWindow(0, screenSize.height / 2, screenSize.width / 2, screenSize.height / 2);
+            var (width, height, x, y) = WindowManager.GetWorkingArea();
+            WindowManager.MoveAndResizeWindow(x, y + height / 2, width / 2, height / 2);
             e.Handled = true;
         }
 
         private void OnSnapBottomRight(object? sender, HotkeyEventArgs e)
         {
-            var screenSize = WindowManager.GetScreenSize();
-            WindowManager.MoveAndResizeWindow(screenSize.width / 2, screenSize.height / 2, screenSize.width / 2, screenSize.height / 2);
+            var (width, height, x, y) = WindowManager.GetWorkingArea();
+            WindowManager.MoveAndResizeWindow(x + width / 2, y + height / 2, width / 2, height / 2);
+            e.Handled = true;
+        }
+
+        private void OnSnapLeftThird(object? sender, HotkeyEventArgs e)
+        {
+            var (width, height, x, y) = WindowManager.GetWorkingArea();
+            int thirdWidth = width / 3;
+            WindowManager.MoveAndResizeWindow(x, y, thirdWidth, height);
+            e.Handled = true;
+        }
+        
+        private void OnSnapMidThird(object? sender, HotkeyEventArgs e)
+        {
+            var (width, height, x, y) = WindowManager.GetWorkingArea();
+            int thirdWidth = width / 3;
+            WindowManager.MoveAndResizeWindow(x + thirdWidth, y, thirdWidth, height);
+            e.Handled = true;
+        }
+        
+        private void OnSnapRightThird(object? sender, HotkeyEventArgs e)
+        {
+            var (width, height, x, y) = WindowManager.GetWorkingArea();
+            int thirdWidth = width / 3;
+            WindowManager.MoveAndResizeWindow(x + 2 * thirdWidth, y, thirdWidth, height);
             e.Handled = true;
         }
     }
