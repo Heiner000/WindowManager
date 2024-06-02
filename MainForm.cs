@@ -6,11 +6,15 @@ using System.Drawing;
 
 namespace WindowManager
 {
+    // class hanldes the UI & hotkey registration for the window manager
     public partial class MainForm : Form
     {
+        // NotifyIcon for the system tray icon
         private NotifyIcon trayIcon = new NotifyIcon();
+        // ContextMenuStrip for the tray icon menu
         private ContextMenuStrip trayMenu = new ContextMenuStrip();
 
+        // MainForm constructor
         public MainForm()
         {
             InitializeComponent();
@@ -18,43 +22,67 @@ namespace WindowManager
             InitializeTrayIcon();
         }
 
+        // register hotkeys to snap windows using SnapToFraction
         private void RegisterHotkeys()
         {
+            // params: key identifier, key combo, action lambda
             // halves
-            HotkeyManager.Current.AddOrReplace("SnapLeft", Keys.Left | Keys.Control | Keys.Alt, OnSnapLeft);
-            HotkeyManager.Current.AddOrReplace("SnapRight", Keys.Right | Keys.Control | Keys.Alt, OnSnapRight);
-            HotkeyManager.Current.AddOrReplace("SnapTop", Keys.Up | Keys.Control | Keys.Alt, OnSnapTop);
-            HotkeyManager.Current.AddOrReplace("SnapBottom", Keys.Down | Keys.Control | Keys.Alt, OnSnapBottom);
-            // corner fourths
-            HotkeyManager.Current.AddOrReplace("SnapTopLeft", Keys.O | Keys.Control | Keys.Alt, OnSnapTopLeft);
-            HotkeyManager.Current.AddOrReplace("SnapTopRight", Keys.P | Keys.Control | Keys.Alt, OnSnapTopRight);
-            HotkeyManager.Current.AddOrReplace("SnapBottomLeft", Keys.K | Keys.Control | Keys.Alt, OnSnapBottomLeft);
-            HotkeyManager.Current.AddOrReplace("SnapBottomRight", Keys.L | Keys.Control | Keys.Alt, OnSnapBottomRight);
-            // full thirds
-            HotkeyManager.Current.AddOrReplace("SnapLeftThird", Keys.A | Keys.Control | Keys.Alt, OnSnapLeftThird);
-            HotkeyManager.Current.AddOrReplace("SnapMidThird", Keys.S | Keys.Control | Keys.Alt, OnSnapMidThird);
-            HotkeyManager.Current.AddOrReplace("SnapRightThird", Keys.D | Keys.Control | Keys.Alt, OnSnapRightThird);
-            // sixths
-            HotkeyManager.Current.AddOrReplace("SnapTopLeftSixth", Keys.Q | Keys.Control | Keys.Alt, OnSnapTopLeftSixth);
-            HotkeyManager.Current.AddOrReplace("SnapTopMidSixth", Keys.W | Keys.Control | Keys.Alt, OnSnapTopMidSixth);
-            HotkeyManager.Current.AddOrReplace("SnapTopRightSixth", Keys.E | Keys.Control | Keys.Alt, OnSnapTopRightSixth);
-            HotkeyManager.Current.AddOrReplace("SnapBotLeftSixth", Keys.Z | Keys.Control | Keys.Alt, OnSnapBotLeftSixth);
-            HotkeyManager.Current.AddOrReplace("SnapBotMidSixth", Keys.X | Keys.Control | Keys.Alt, OnSnapBotMidSixth);
-            HotkeyManager.Current.AddOrReplace("SnapBotRightSixth", Keys.C | Keys.Control | Keys.Alt, OnSnapBotRightSixth);
+            HotkeyManager.Current.AddOrReplace("SnapLeft", Keys.Left | Keys.Control | Keys.Alt, (s, e) => SnapToFraction(0, 0, 0.5, 1));
+            HotkeyManager.Current.AddOrReplace("SnapRight", Keys.Right | Keys.Control | Keys.Alt, (s, e) => SnapToFraction(0.5, 0, 0.5, 1));
+            HotkeyManager.Current.AddOrReplace("SnapTop", Keys.Up | Keys.Control | Keys.Alt, (s, e) => SnapToFraction(0, 0, 1, 0.5));
+            HotkeyManager.Current.AddOrReplace("SnapBottom", Keys.Down | Keys.Control | Keys.Alt, (s, e) => SnapToFraction(0, 0.5, 1, 0.5));
 
+            // corner fourths
+            HotkeyManager.Current.AddOrReplace("SnapTopLeft", Keys.O | Keys.Control | Keys.Alt, (s, e) => SnapToFraction(0, 0, 0.5, 0.5));
+            HotkeyManager.Current.AddOrReplace("SnapTopRight", Keys.P | Keys.Control | Keys.Alt, (s, e) => SnapToFraction(0.5, 0, 0.5, 0.5));
+            HotkeyManager.Current.AddOrReplace("SnapBottomLeft", Keys.K | Keys.Control | Keys.Alt, (s, e) => SnapToFraction(0, 0.5, 0.5, 0.5));
+            HotkeyManager.Current.AddOrReplace("SnapBottomRight", Keys.L | Keys.Control | Keys.Alt, (s, e) => SnapToFraction(0.5, 0.5, 0.5, 0.5));
+
+            // full thirds
+            HotkeyManager.Current.AddOrReplace("SnapLeftThird", Keys.A | Keys.Control | Keys.Alt, (s, e) => SnapToFraction(0, 0, 1.0 / 3, 1));
+            HotkeyManager.Current.AddOrReplace("SnapMidThird", Keys.S | Keys.Control | Keys.Alt, (s, e) => SnapToFraction(1.0 / 3, 0, 1.0 / 3, 1));
+            HotkeyManager.Current.AddOrReplace("SnapRightThird", Keys.D | Keys.Control | Keys.Alt, (s, e) => SnapToFraction(2.0 / 3, 0, 1.0 / 3, 1));
+
+            // two-thirds
+            HotkeyManager.Current.AddOrReplace("Snap2ThirdsLeft", Keys.V | Keys.Control | Keys.Alt, (s, e) => SnapToFraction(0, 0, 2.0 / 3, 1));
+            HotkeyManager.Current.AddOrReplace("Snap2ThirdsRight", Keys.B | Keys.Control | Keys.Alt, (s, e) => SnapToFraction(1.0 / 3, 0, 2.0 / 3, 1));
+
+
+            // sixths
+            HotkeyManager.Current.AddOrReplace("SnapTopLeftSixth", Keys.Q | Keys.Control | Keys.Alt, (s, e) => SnapToFraction(0, 0, 1.0 / 3, 0.5));
+            HotkeyManager.Current.AddOrReplace("SnapTopMidSixth", Keys.W | Keys.Control | Keys.Alt, (s, e) => SnapToFraction(1.0 / 3, 0, 1.0 / 3, 0.5));
+            HotkeyManager.Current.AddOrReplace("SnapTopRightSixth", Keys.E | Keys.Control | Keys.Alt, (s, e) => SnapToFraction(2.0 / 3, 0, 1.0 / 3, 0.5));
+            HotkeyManager.Current.AddOrReplace("SnapBotLeftSixth", Keys.Z | Keys.Control | Keys.Alt, (s, e) => SnapToFraction(0, 0.5, 1.0 / 3, 0.5));
+            HotkeyManager.Current.AddOrReplace("SnapBotMidSixth", Keys.X | Keys.Control | Keys.Alt, (s, e) => SnapToFraction(1.0 / 3, 0.5, 1.0 / 3, 0.5));
+            HotkeyManager.Current.AddOrReplace("SnapBotRightSixth", Keys.C | Keys.Control | Keys.Alt, (s, e) => SnapToFraction(2.0 / 3, 0.5, 1.0 / 3, 0.5));
+
+            // eighths
+            HotkeyManager.Current.AddOrReplace("EighthT1", Keys.R | Keys.Control | Keys.Alt, (s, e) => SnapToFraction(0, 0, 1.0 / 4, 0.5));
+            HotkeyManager.Current.AddOrReplace("EighthT2", Keys.T | Keys.Control | Keys.Alt, (s, e) => SnapToFraction(1.0 / 4, 0, 1.0 / 4, 0.5));
+            HotkeyManager.Current.AddOrReplace("EighthT3", Keys.Y | Keys.Control | Keys.Alt, (s, e) => SnapToFraction(2.0 / 4, 0, 1.0 / 4, 0.5));
+            HotkeyManager.Current.AddOrReplace("EighthT4", Keys.U | Keys.Control | Keys.Alt, (s, e) => SnapToFraction(3.0 / 4, 0, 1.0 / 4, 0.5));
+            HotkeyManager.Current.AddOrReplace("EighthB1", Keys.F | Keys.Control | Keys.Alt, (s, e) => SnapToFraction(0, 0.5, 1.0 / 4, 0.5));
+            HotkeyManager.Current.AddOrReplace("EighthB2", Keys.G | Keys.Control | Keys.Alt, (s, e) => SnapToFraction(1.0 / 4, 0.5, 1.0 / 4, 0.5));
+            HotkeyManager.Current.AddOrReplace("EighthB3", Keys.H | Keys.Control | Keys.Alt, (s, e) => SnapToFraction(2.0 / 4, 0.5, 1.0 / 4, 0.5));
+            HotkeyManager.Current.AddOrReplace("EighthB4", Keys.J | Keys.Control | Keys.Alt, (s, e) => SnapToFraction(3.0 / 4, 0.5, 1.0 / 4, 0.5));
         }
 
+        // initializes the system tray icon and context menu
         private void InitializeTrayIcon()
         {
+            // add an exit option for the tray menu
             trayMenu.Items.Add("Exit", null, OnExit);
-            
+
+            // set up the tray icon
             trayIcon.Text = "WindowManager";
             trayIcon.Icon = new Icon(SystemIcons.Application, 40, 40);
 
+            // associate the context menu with the tray icon
             trayIcon.ContextMenuStrip = trayMenu;
             trayIcon.Visible = true;
         }
 
+        // override the OnLoad method to hide the form and remove it form the taskbar
         protected override void OnLoad(EventArgs e)
         {
             Visible = false; // Hide the form window
@@ -62,143 +90,25 @@ namespace WindowManager
             base.OnLoad(e);
         }
 
+        // event handler to exit the app when the exit option is selected
         private void OnExit(object? sender, EventArgs e)
         {
             Application.Exit();
         }
-        // SNAP LEFT HALF
-        private void OnSnapLeft(object? sender, HotkeyEventArgs e)
+
+        // General method to snap to a fraction of the screen's working area
+        private void SnapToFraction(double startXFraction, double startYFraction, double widthFraction, double heightFraction)
+        // startXFraction = starting x position as a fraction of the screen's width
+        // startYFraction = starting y position as a fraction of the screen's height
+        // widthFraction = width of the window as a fraction of the screen's width
+        // heightFraction = height of the window as a fraction of the screen's height
         {
             var (width, height, x, y) = WindowManager.GetWorkingArea();
-            WindowManager.MoveAndResizeWindow(x, y, width / 2, height);
-            e.Handled = true;
-        }
-        // SNAP RIGHT HALF
-        private void OnSnapRight(object? sender, HotkeyEventArgs e)
-        {
-            var (width, height, x, y) = WindowManager.GetWorkingArea();
-            WindowManager.MoveAndResizeWindow(x + width / 2, y, width / 2, height);
-            e.Handled = true;
-        }
-        // SNAP TOP HALF
-        private void OnSnapTop(object? sender, HotkeyEventArgs e)
-        {
-            var (width, height, x, y) = WindowManager.GetWorkingArea();
-            WindowManager.MoveAndResizeWindow(x, y, width, height / 2);
-            e.Handled = true;
-        }
-        // SNAP BOTTOM HALF
-        private void OnSnapBottom(object? sender, HotkeyEventArgs e)
-        {
-            var (width, height, x, y) = WindowManager.GetWorkingArea();
-            WindowManager.MoveAndResizeWindow(x, y + height / 2, width, height / 2);
-            e.Handled = true;
-        }
-        // SNAP TOP LEFT CORNER
-        private void OnSnapTopLeft(object? sender, HotkeyEventArgs e)
-        {
-            var (width, height, x, y) = WindowManager.GetWorkingArea();
-            WindowManager.MoveAndResizeWindow(x, y, width / 2, height / 2);
-            e.Handled = true;
-        }
-        // SNAP TOP RIGHT CORNER
-        private void OnSnapTopRight(object? sender, HotkeyEventArgs e)
-        {
-            var (width, height, x, y) = WindowManager.GetWorkingArea();
-            WindowManager.MoveAndResizeWindow(x + width / 2, y, width / 2, height / 2);
-            e.Handled = true;
-        }
-        // SNAP BOTTOM LEFT CORNER
-        private void OnSnapBottomLeft(object? sender, HotkeyEventArgs e)
-        {
-            var (width, height, x, y) = WindowManager.GetWorkingArea();
-            WindowManager.MoveAndResizeWindow(x, y + height / 2, width / 2, height / 2);
-            e.Handled = true;
-        }
-        // SNAP BOTTOM RIGHT CORNER
-        private void OnSnapBottomRight(object? sender, HotkeyEventArgs e)
-        {
-            var (width, height, x, y) = WindowManager.GetWorkingArea();
-            WindowManager.MoveAndResizeWindow(x + width / 2, y + height / 2, width / 2, height / 2);
-            e.Handled = true;
-        }
-        // SNAP LEFT THIRD
-        private void OnSnapLeftThird(object? sender, HotkeyEventArgs e)
-        {
-            var (width, height, x, y) = WindowManager.GetWorkingArea();
-            int thirdWidth = width / 3;
-            WindowManager.MoveAndResizeWindow(x, y, thirdWidth, height);
-            e.Handled = true;
-        }
-        // SNAP MIDDLE THIRD
-        private void OnSnapMidThird(object? sender, HotkeyEventArgs e)
-        {
-            var (width, height, x, y) = WindowManager.GetWorkingArea();
-            int thirdWidth = width / 3;
-            WindowManager.MoveAndResizeWindow(x + thirdWidth, y, thirdWidth, height);
-            e.Handled = true;
-        }
-        // SNAP RIGHT THIRD
-        private void OnSnapRightThird(object? sender, HotkeyEventArgs e)
-        {
-            var (width, height, x, y) = WindowManager.GetWorkingArea();
-            int thirdWidth = width / 3;
-            WindowManager.MoveAndResizeWindow(x + 2 * thirdWidth, y, thirdWidth, height);
-            e.Handled = true;
-        }
-        // SNAP TOP LEFT SIXTH
-        private void OnSnapTopLeftSixth(object? sender, HotkeyEventArgs e)
-        {
-            var (width, height, x, y) = WindowManager.GetWorkingArea();
-            int sixthWidth = width / 3;
-            int sixthHeight = height / 2;
-            WindowManager.MoveAndResizeWindow(x, y, sixthWidth, sixthHeight);
-            e.Handled = true;
-        }
-        // SNAP TOP MIDDLE SIXTH
-        private void OnSnapTopMidSixth(object? sender, HotkeyEventArgs e)
-        {
-            var (width, height, x, y) = WindowManager.GetWorkingArea();
-            int sixthWidth = width / 3;
-            int sixthHeight = height / 2;
-            WindowManager.MoveAndResizeWindow(x + sixthWidth, y, sixthWidth, sixthHeight);
-            e.Handled = true;
-        }
-        // SNAP TOP RIGHT SIXTH
-        private void OnSnapTopRightSixth(object? sender, HotkeyEventArgs e)
-        {
-            var (width, height, x, y) = WindowManager.GetWorkingArea();
-            int sixthWidth = width / 3;
-            int sixthHeight = height / 2;
-            WindowManager.MoveAndResizeWindow(x + 2 * sixthWidth, y, sixthWidth, sixthHeight);
-            e.Handled = true;
-        }
-        // SNAP BOTTOM LEFT SIXTH
-        private void OnSnapBotLeftSixth(object? sender, HotkeyEventArgs e)
-        {
-            var (width, height, x, y) = WindowManager.GetWorkingArea();
-            int sixthWidth = width / 3;
-            int sixthHeight = height / 2;
-            WindowManager.MoveAndResizeWindow(x, y + sixthWidth, sixthWidth, sixthHeight);
-            e.Handled = true;
-        }
-        // SNAP BOTTOM MIDDLE SIXTH
-        private void OnSnapBotMidSixth(object? sender, HotkeyEventArgs e)
-        {
-            var (width, height, x, y) = WindowManager.GetWorkingArea();
-            int sixthWidth = width / 3;
-            int sixthHeight = height / 2;
-            WindowManager.MoveAndResizeWindow(x + sixthWidth, y + sixthHeight, sixthWidth, sixthHeight);
-            e.Handled = true;
-        }
-        // SNAP BOTTOM RIGHT SIXTH
-        private void OnSnapBotRightSixth(object? sender, HotkeyEventArgs e)
-        {
-            var (width, height, x, y) = WindowManager.GetWorkingArea();
-            int sixthWidth = width / 3;
-            int sixthHeight = height / 2;
-            WindowManager.MoveAndResizeWindow(x + 2 * sixthWidth, y + sixthHeight, sixthWidth, sixthHeight);
-            e.Handled = true;
+            int newWidth = (int)(width * widthFraction);
+            int newHeight = (int)(height * heightFraction);
+            int newX = x + (int)(width * startXFraction);
+            int newY = y + (int)(height * startYFraction);
+            WindowManager.MoveAndResizeWindow(newX, newY, newWidth, newHeight);
         }
     }
 }
